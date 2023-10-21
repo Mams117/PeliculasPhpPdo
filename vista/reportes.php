@@ -2,19 +2,36 @@
 session_start();
 
 if ($_SESSION['session'] == true) {
+    try {
+        $pdo = new PDO("mysql:host=localhost;dbname=peliculapdo", "root", "");
+    } catch (PDOException $e) {
+        die("Error de conexión a la base de datos: " . $e->getMessage());
+    }
     include("../modelo/MySQL.php");
     $conexion = new MySQL();
     $pdo = $conexion->conectar();
+    $idUser = $_SESSION['idUsuario'];
     // Consulta preparada para evitar inyección de SQL
     $sql = "SELECT id,nombre,descripcion,estado,fecha FROM peliculas WHERE estado=1";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $fila = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql2 = "SELECT user,IdUsuario FROM usuarios";
+    $sql2 = "SELECT user,idUsuario FROM usuarios";
     $stmt2 = $pdo->prepare($sql2);
     $stmt2->execute();
     $fila2 = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+    //hago las consultas del log 
+    $url = $_SERVER['REQUEST_URI'];
+    $tiempo = date('Y-m-d');
+
+    $logger = "INSERT INTO logger (url,tiempo,IdUsuario) VALUES (:url, :tiempo, :idUser)";
+    $stmt = $pdo->prepare($logger);
+    $stmt->bindParam(':url', $url, PDO::PARAM_STR);
+    $stmt->bindParam(':tiempo', $tiempo, PDO::PARAM_INT);
+    $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
+    $stmt->execute();
 
 ?>
 
@@ -159,23 +176,88 @@ if ($_SESSION['session'] == true) {
                 <h1 style="text-align:center; font-size: 500%; font-weight: bold;">Reportes</h1>
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-10" style="margin-top: 10px;">
+                        <h1>Generar Reporte en PDF</h1>
+                        <div class="col-5">
                             <form action="../controlador/fpdf/PruebaV.php" method="post">
                                 <select class="form-select" aria-label="Default select example" name="idUsuario" style="margin-top: 20px;">
                                     <option selected>Elija el usuario</option>
                                     <?php
                                     foreach ($fila2 as $datos) {
                                     ?>
-                                        <option value=""><?php echo $datos['user']; ?></option>
+                                        <option value="<?php echo $datos['idUsuario'] ?>"> <?php echo $datos['idUsuario'] ?><?php echo $datos['user']; ?></option>
                                     <?php
                                     }
                                     ?>
                                 </select>
-                                <button type="button" class="btn btn-secondary" style="margin-top: 10px;">Generar Reporte</button>
+                                <button type="submit" class="btn btn-secondary" style="margin-top: 10px;">Generar Reporte</button>
 
                             </form>
 
                         </div>
+
+                        <h1>Generar Reporte en Excel</h1>
+                        <div class="col-5" style="margin-top: 10px;">
+                            <form action="../controlador/excel/generarExecel.php" method="post">
+                                <select class="form-select" aria-label="Default select example" name="idUsuario" style="margin-top: 20px;">
+                                    <option selected>Elija el usuario</option>
+                                    <?php
+                                    foreach ($fila2 as $datos) {
+                                    ?>
+                                        <option value="<?php echo $datos['idUsuario'] ?>"> <?php echo $datos['idUsuario'] ?><?php echo $datos['user']; ?></option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                                <button type="submit" class="btn btn-secondary" style="margin-top: 10px;">Generar Excel</button>
+
+                            </form>
+
+                        </div>
+
+                        <h1>Enviar reporte Correo</h1>
+                        <div class="col-5" style="margin-top: 10px;">
+                            <form class="row justify-content-center g-4 mt-5" method="POST" action="../controlador/email/correo.php" enctype="multipart/form-data">
+                                <div class="col-12 text-center">
+
+                                </div>
+                                <div class="col-6">
+                                    <label for="correo" class="form-label ">Dirección de Correo Electrónico:</label>
+                                    <input type="email" class="form-control" id="correo" name="correo" required>
+                                </div>
+                                <div class="col-6">
+                                    <label for="archivo" class="form-label">Seleccionar Archivo:</label>
+                                    <input type="file" style="border-radius: 1px;" class="form-control" id="archivo" name="archivo" accept=".pdf, .xlsx, .csv" required>
+                                </div>
+                                <div class="col-12 text-center">
+                                    <button type="submit" class="btn btn-success">Enviar Informes por Correo</button>
+                                </div>
+                            </form>
+
+                        </div>
+
+
+
+                        <div class="col-5" style="margin-top: 20px;">
+                            <h1>Reporte por fechas</h1>
+                            <form action="../controlador/fpdf/reporteFechas.php" method="post">
+                                <div class="input-group mb-3">
+
+
+                                    <input type="date" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" name="fechaInicia">
+                                </div>
+                                <h5>fecha final</h5>
+                                <div class="input-group mb-3">
+
+                                    <input type="date" class="form-control" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" name="fechaFinal">
+                                </div>
+
+                                <button type="submit" class="btn btn-success">generar reporte por fechas<i class="fa fa-exchange" aria-hidden="true"></i></button>
+                            </form>
+
+                        </div>
+
+
+
                         <div class="col-12" style="margin-top: 30px;">
                             <table class="table table-striped">
                                 <thead>

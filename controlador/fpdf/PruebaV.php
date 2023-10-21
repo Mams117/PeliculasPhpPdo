@@ -37,11 +37,11 @@ class PDF extends FPDF
       $this->SetDrawColor(163, 163, 163); //colorBorde
       $this->SetFont('Arial', 'B', 11);
       $this->Cell(18, 10, utf8_decode('Id°'), 1, 0, 'C', 1);
-      $this->Cell(20, 10, utf8_decode('Nombre'), 1, 0, 'C', 1);
       $this->Cell(30, 10, utf8_decode('Pelicula'), 1, 0, 'C', 1);
-      $this->Cell(25, 10, utf8_decode('idioma'), 1, 0, 'C', 1);
-      $this->Cell(25, 10, utf8_decode('descripcion'), 1, 0, 'C', 1);
-      $this->Cell(25, 10, utf8_decode('genero'), 1, 1, 'C', 1);
+      $this->Cell(20, 10, utf8_decode('Descripcion'), 1, 0, 'C', 1);
+      $this->Cell(25, 10, utf8_decode('Fecha'), 1, 0, 'C', 1);
+      $this->Cell(25, 10, utf8_decode('Estado'), 1, 0, 'C', 1);
+      $this->Ln(10);
    }
 
    // Pie de página
@@ -58,7 +58,7 @@ class PDF extends FPDF
    }
 }
 
-
+session_start();
 
 $pdf = new PDF();
 $pdf->AddPage(); /* aqui entran dos para parametros (horientazion,tamaño)V->portrait H->landscape tamaño (A3.A4.A5.letter.legal) */
@@ -68,38 +68,42 @@ $i = 0;
 $pdf->SetFont('Arial', '', 12);
 $pdf->SetDrawColor(163, 163, 163); //colorBorde
 
-/*$consulta_reporte_alquiler = $conexion->query("  ");*/
 
-/*while ($datos_reporte = $consulta_reporte_alquiler->fetch_object()) {      
-   }*/
 $i = $i + 1;
+$id = $_POST['idUsuario'];
 
-if (
-   isset($_POST['idusuario']) && !empty($_POST['idusuario'])
+$pdo = new PDO("mysql:host=localhost;dbname=peliculapdo", "root", "");
 
-) {
-   require_once '../../modelo/MySQL.php';
-   $idusuario = $_POST['idusuario'];
-   $sql = "SELECT * pelicula Where IdUsuario:user ";
-   $stmt->bindParam(':IdUsuario', $idUser, PDO::PARAM_STR);
-   $stmt->execute();
-   //traigo las peliculas
-   //consulta para traer los idiomas 
-   //se desconecta de la base de datos para librerar memoria
-   $conn->desconectar();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-   /* TABLA */
-   while ($row = mysqli_fetch_array($consulta)) {
-      //consulta para traer los idiomas 
+$stmt = $pdo->prepare("SELECT DISTINCT usuarios.idUsuario, usuarios.user,peliculas.id AS id, peliculas.nombre AS nombre, peliculas.descripcion AS descripcion, peliculas.estado AS estado, peliculas.fecha AS fecha
+FROM usuarios
+INNER JOIN peliculas ON peliculas.idUsuario = usuarios.idUsuario 
+WHERE usuarios.idUsuario=:id");
+$stmt->bindParam(':id', $id, PDO::PARAM_INT);
+$stmt->execute();
+$row2 = $stmt->fetchAll(PDO::FETCH_ASSOC);
+//traigo las peliculas
+//consulta para traer los idiomas 
+//se desconecta de la base de datos para librerar memoria
 
 
-      $pdf->Cell(18, 10, utf8_decode($row['idPelicula']), 1, 0, 'C', 0);
-      $pdf->Cell(20, 10, utf8_decode($row['user']), 1, 0, 'C', 0);
-      $pdf->Cell(30, 10, utf8_decode($row['nombre_Pelicula']), 1, 0, 'C', 0);
-      $pdf->Cell(25, 10, utf8_decode($row['nombre_Idioma']), 1, 0, 'C', 0);
-      $pdf->Cell(25, 10, utf8_decode($row['descripcion_Pelicula']), 1, 0, 'C', 0);
-      $pdf->Cell(25, 10, utf8_decode($row['nombre_Genero']), 1, 1, 'C', 0);
-   }
+/* TABLA */
+foreach ($row2 as $datos) {
+   $pdf->Cell(18, 10, utf8_decode($datos['id']), 1, 0, 'C', 0);
+   $pdf->Cell(20, 10, utf8_decode($datos['nombre']), 1, 0, 'C', 0);
+   $pdf->Cell(30, 10, utf8_decode($datos['descripcion']), 1, 0, 'C', 0);
+   $pdf->Cell(25, 10, utf8_decode($datos['fecha']), 1, 0, 'C', 0);
+   $pdf->Cell(25, 10, utf8_decode($datos['estado']), 1, 0, 'C', 0);
+   $pdf->Ln(10);
+   // $pdf->Cell(25, 10, utf8_decode($row['nombre_Genero']), 1, 1, 'C', 0);
 }
+//consulta para traer los idiomas 
+
+
+
+
+
+
 
 $pdf->Output('Prueba.pdf', 'I');//nombreDescarga, Visor(I->visualizar - D->descargar)

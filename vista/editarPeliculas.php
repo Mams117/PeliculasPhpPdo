@@ -1,9 +1,17 @@
 <?php
 session_start();
 if ($_SESSION['session'] == true) {
+
+    try {
+        $pdo = new PDO("mysql:host=localhost;dbname=peliculapdo", "root", "");
+    } catch (PDOException $e) {
+        die("Error de conexión a la base de datos: " . $e->getMessage());
+    }
+    $idUser = $_SESSION['idUsuario'];
     $idPeli = $_GET['id'];
     include("../modelo/MySQL.php");
     $conexion = new MySQL();
+
     $pdo = $conexion->conectar();
     // Consulta preparada para evitar inyección de SQL
     $sql = "SELECT * FROM peliculas WHERE id=:id";
@@ -13,6 +21,18 @@ if ($_SESSION['session'] == true) {
     $fila = $stmt->fetch(PDO::FETCH_ASSOC);
     $nombrePelicula = $fila['nombre'];
     $descripcionPelicula = $fila['descripcion'];
+
+
+    //hago las consultas del log 
+    $url = $_SERVER['REQUEST_URI'];
+    $tiempo = date('Y-m-d');
+
+    $logger = "INSERT INTO logger (url,tiempo,IdUsuario) VALUES (:url, :tiempo, :idUser)";
+    $stmt = $pdo->prepare($logger);
+    $stmt->bindParam(':url', $url, PDO::PARAM_STR);
+    $stmt->bindParam(':tiempo', $tiempo, PDO::PARAM_INT);
+    $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
+    $stmt->execute();
 ?>
 
     <!doctype html>

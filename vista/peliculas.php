@@ -2,6 +2,12 @@
 session_start();
 
 if ($_SESSION['session'] == true) {
+    try {
+        $pdo = new PDO("mysql:host=localhost;dbname=peliculapdo", "root", "");
+    } catch (PDOException $e) {
+        die("Error de conexión a la base de datos: " . $e->getMessage());
+    }
+    $idUser = $_SESSION['idUsuario'];
     include("../modelo/MySQL.php");
     $conexion = new MySQL();
     $pdo = $conexion->conectar();
@@ -10,6 +16,17 @@ if ($_SESSION['session'] == true) {
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $fila = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    //hago las consultas del log 
+    $url = $_SERVER['REQUEST_URI'];
+    $tiempo = date('Y-m-d');
+
+    $logger = "INSERT INTO logger (url,tiempo,IdUsuario) VALUES (:url, :tiempo, :idUser)";
+    $stmt = $pdo->prepare($logger);
+    $stmt->bindParam(':url', $url, PDO::PARAM_STR);
+    $stmt->bindParam(':tiempo', $tiempo, PDO::PARAM_INT);
+    $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
+    $stmt->execute();
 ?>
 
     <!doctype html>

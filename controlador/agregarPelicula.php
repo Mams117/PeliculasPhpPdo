@@ -4,6 +4,7 @@ session_start();
 if (isset($_POST['nombrePelicula']) && !empty($_POST['nombrePelicula']) && isset($_POST['descripcionPelicula']) && !empty($_POST['descripcionPelicula'])) {
     $nombrePelicula = $_POST['nombrePelicula'];
     $descripcionPeliculas = $_POST['descripcionPelicula'];
+    $edadPelicula = $_POST['edadPelicula'];
     $fecha = date('Y-m-d');
     $idUser = $_POST['idUsuario'];
     // Se instancia la clase PDO para la conexión a la base de datos
@@ -23,12 +24,17 @@ if (isset($_POST['nombrePelicula']) && !empty($_POST['nombrePelicula']) && isset
         header("Location:../vista/agregarPeliculas.php");
     } else {
         // Consulta preparada para evitar inyección de SQL
-        $sql = "INSERT INTO peliculas (nombre,descripcion,fecha,idUsuario) VALUES(:nombrePeli,:descripcionPeli,:fecha,:idUsuario)";
+        $sql = "INSERT INTO peliculas (nombre,descripcion,fecha,idUsuario,edad,audiencia) VALUES(:nombrePeli,:descripcionPeli,:fecha,:idUsuario,:edadPelicula,:audiencia)";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':nombrePeli', $nombrePelicula, PDO::PARAM_STR);
         $stmt->bindParam(':descripcionPeli', $descripcionPeliculas, PDO::PARAM_STR);
         $stmt->bindParam(':fecha', $fecha, PDO::PARAM_STR);
         $stmt->bindParam(':idUsuario', $idUser, PDO::PARAM_STR);
+        $stmt->bindParam(':edadPelicula', $edadPelicula, PDO::PARAM_STR);
+        $stmt->bindParam(':audiencia', $audiencia, PDO::PARAM_STR);
+
+        
+
         $stmt->execute();
         $_SESSION['mensaje'] = "La Pelicula Fue Agregada Correctamente";
         $_SESSION['mensajeTitu'] = "Pelicula Agregada";

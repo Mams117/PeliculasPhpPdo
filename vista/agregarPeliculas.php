@@ -1,8 +1,24 @@
 <?php
 session_start();
-
+require_once '../modelo/MySQL.php';
 if ($_SESSION['session'] == true) {
+    try {
+        $pdo = new PDO("mysql:host=localhost;dbname=peliculapdo", "root", "");
+    } catch (PDOException $e) {
+        die("Error de conexión a la base de datos: " . $e->getMessage());
+    }
     $idUser = $_SESSION['idUsuario'];
+
+    //hago las consultas del log 
+    $url = $_SERVER['REQUEST_URI'];
+    $tiempo = date('Y-m-d');
+
+    $logger = "INSERT INTO logger (url,tiempo,IdUsuario) VALUES (:url, :tiempo, :idUser)";
+    $stmt = $pdo->prepare($logger);
+    $stmt->bindParam(':url', $url, PDO::PARAM_STR);
+    $stmt->bindParam(':tiempo', $tiempo, PDO::PARAM_INT);
+    $stmt->bindParam(':idUser', $idUser, PDO::PARAM_INT);
+    $stmt->execute();
 ?>
 
     <!doctype html>
@@ -153,6 +169,11 @@ if ($_SESSION['session'] == true) {
                         <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Descripcion de la Pelicula</label>
                             <textarea class="form-control" placeholder="" id="floatingTextarea2" style="height: 100px" name="descripcionPelicula"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Rango de edad Pelicula</label>
+                            <input type="text" class="form-control" id="edadPelicula" name="edadPelicula" aria-describedby="emailHelp">
                         </div>
                         <h1 style="text-align: center;"><button type="submit" class="btn btn-primary">Agregar</button></h1>
                         <br>
