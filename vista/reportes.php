@@ -139,11 +139,11 @@ if ($_SESSION['session'] == true) {
                             <label for="" style="margin-top: 9.5px; margin-right: 10px; font-weight:bold; ">
                             </label>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="user-avatar rounded-circle" src="./assets/images/UsersinFondo.png" alt="User Avatar">
+                                <img class="user-avatar rounded-circle" src="./assets/images/UsersinFondo.png" alt="Mi perfil">
                             </a>
 
                             <div class="user-menu dropdown-menu">
-                                <a class="nav-link" href="./editarUsuario.php"><i class="fa fa-user"></i> Mi Perfil</a>
+
 
                                 <a class="nav-link" href="../controlador/cerrar.php"><i class="fa fa-power-off"></i> Salir </a>
                             </div>
@@ -195,8 +195,9 @@ if ($_SESSION['session'] == true) {
 
                         </div>
 
-                        <h1>Generar Reporte en Excel</h1>
+
                         <div class="col-5" style="margin-top: 10px;">
+                            <h1>Generar Reporte en Excel</h1>
                             <form action="../controlador/excel/generarExecel.php" method="post">
                                 <select class="form-select" aria-label="Default select example" name="idUsuario" style="margin-top: 20px;">
                                     <option selected>Elija el usuario</option>
@@ -214,8 +215,28 @@ if ($_SESSION['session'] == true) {
 
                         </div>
 
-                        <h1>Enviar reporte Correo</h1>
                         <div class="col-5" style="margin-top: 10px;">
+                            <h1>Generar Reporte en Excel promedio</h1>
+                            <form action="../controlador/excel/excelPromedio.php" method="post">
+                                <select class="form-select" aria-label="Default select example" name="idUsuario" style="margin-top: 20px;">
+                                    <option selected>Elija el usuario</option>
+                                    <?php
+                                    foreach ($fila2 as $datos) {
+                                    ?>
+                                        <option value="<?php echo $datos['idUsuario'] ?>"> <?php echo $datos['idUsuario'] ?><?php echo $datos['user']; ?></option>
+                                    <?php
+                                    }
+                                    ?>
+                                </select>
+                                <button type="submit" class="btn btn-secondary" style="margin-top: 10px;">Generar Excel</button>
+
+                            </form>
+
+                        </div>
+
+
+                        <div class="col-5" style="margin-top: 10px;">
+                            <h1>Enviar reporte Correo</h1>
                             <form class="row justify-content-center g-4 mt-5" method="POST" action="../controlador/email/correo.php" enctype="multipart/form-data">
                                 <div class="col-12 text-center">
 
@@ -255,6 +276,7 @@ if ($_SESSION['session'] == true) {
                             </form>
 
                         </div>
+
 
 
 

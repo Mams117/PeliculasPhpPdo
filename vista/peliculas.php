@@ -133,11 +133,11 @@ if ($_SESSION['session'] == true) {
                             <label for="" style="margin-top: 9.5px; margin-right: 10px; font-weight:bold; ">
                             </label>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="user-avatar rounded-circle" src="./assets/images/UsersinFondo.png" alt="User Avatar">
+                                <img class="user-avatar rounded-circle" src="./assets/images/UsersinFondo.png" alt="Mi perfil">
                             </a>
 
                             <div class="user-menu dropdown-menu">
-                                <a class="nav-link" href="./editarUsuario.php"><i class="fa fa-user"></i> Mi Perfil</a>
+
 
                                 <a class="nav-link" href="../controlador/cerrar.php"><i class="fa fa-power-off"></i> Salir </a>
                             </div>
@@ -176,7 +176,7 @@ if ($_SESSION['session'] == true) {
                         ?>
                             <div class="col-3">
                                 <div class="card text-bg-dark border-dark text-center rounded-3" style="width: 18rem;">
-                                    <img src="https://waxworkrecords.com/cdn/shop/products/Warriors_Cover_740x.jpg?v=1542954930" class="card-img-top" alt="...">
+                                    <img src="https://i.pinimg.com/1200x/34/0c/a8/340ca86e649dc419441b6b43cf811eb1.jpg" class="card-img-top" alt="...">
                                     <div class="card-body">
                                         <h5 class="card-title"><?php echo $datos['nombre']; ?></h5>
                                         <p class="card-text"><?php echo $datos['descripcion']; ?></p>

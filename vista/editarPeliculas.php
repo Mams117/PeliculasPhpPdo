@@ -138,11 +138,11 @@ if ($_SESSION['session'] == true) {
                             <label for="" style="margin-top: 9.5px; margin-right: 10px; font-weight:bold; ">
                             </label>
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="user-avatar rounded-circle" src="./assets/images/UsersinFondo.png" alt="User Avatar">
+                                <img class="user-avatar rounded-circle" src="./assets/images/UsersinFondo.png" alt="Mi perfil">
                             </a>
 
                             <div class="user-menu dropdown-menu">
-                                <a class="nav-link" href="#"><i class="fa fa-user"></i> Mi Perfil</a>
+
                                 <a class="nav-link" href="../controlador/cerrar.php"><i class="fa fa-power-off"></i> Salir
                                 </a>
                             </div>
