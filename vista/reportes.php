@@ -1,12 +1,7 @@
 <?php
 session_start();
-
+echo $_SESSION['session'];
 if ($_SESSION['session'] == true) {
-    try {
-        $pdo = new PDO("mysql:host=localhost;dbname=peliculapdo", "root", "");
-    } catch (PDOException $e) {
-        die("Error de conexión a la base de datos: " . $e->getMessage());
-    }
     include("../modelo/MySQL.php");
     $conexion = new MySQL();
     $pdo = $conexion->conectar();
